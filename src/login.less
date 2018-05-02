@@ -154,6 +154,9 @@
             right: -70px;
             top: 40px;
             z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             svg {
               fill: #fff;
               width: 38px;
@@ -225,8 +228,6 @@
                 color: #fff;
                 font-size: 32px;
                 font-weight: bold;
-                animation: back 0.8s linear;
-                animation-iteration-count: infinite;
                 svg {
                   fill: #fff;
                   width: 20px;
@@ -290,6 +291,9 @@
                 transform-origin: center top;
                 transform: translate(0px, -9px) scale(0.97);
             }
+            .error {
+                color: #ed2553
+            }
         }
         &.level-reg {
             h2 {
@@ -313,7 +317,6 @@
             .regTag {
                 animation: regTag 0.3s cubic-bezier(.48,.55,.73,.78), regTag2 0.3s cubic-bezier(.48,.55,.73,.78);
                 animation-fill-mode: forwards; 
-                //animation-direction: reverse;
             }
             .reg_bg {
                 animation: regMask 0.3s cubic-bezier(.48,.55,.73,.78);
@@ -323,6 +326,9 @@
                 visibility: visible;
                 opacity: 1;
                 transform: translateX(0px);
+            }
+            .error {
+                color: #fff;
             }
         }
         &.level-reg-revers {
@@ -355,6 +361,9 @@
                     opacity: 1;
                     transform: translate(0px, 0px);
                 }
+            }
+            .error {
+                color: #fff;
             }
         }
     }
@@ -502,11 +511,6 @@
             &:hover {
                 color: #56ADC7;
             }
-        }
-    }
-    @media screen and (max-height: 650px) {
-        .formBox {
-            
         }
     }
 }
