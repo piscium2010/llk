@@ -12,6 +12,7 @@ module.exports = {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'public')
     },
+    target: 'web',
     devServer: {
       host: "localhost",
       contentBase: './public',
