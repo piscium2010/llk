@@ -1,6 +1,9 @@
 import React from 'react'
 import classnames from 'classnames'
 import './login.less'
+import { register, CODE } from './api'
+import Loading from './loading'
+import Message from './alerts'
 
 class InputField extends React.Component {
     static defaultProps = {
@@ -74,7 +77,10 @@ export default class Login extends React.Component {
             register_repeatPasswordErrorMsg: null,
 
             reset_email: null,
-            reset_emailErrorMsg: null
+            reset_emailErrorMsg: null,
+
+            loading: false,
+            message: null
         }
 
         this.formBoxRef = React.createRef()
@@ -104,18 +110,6 @@ export default class Login extends React.Component {
             }
         }
     }
-    // onEmailBlur(evt) {
-    //     let { email } = this.state
-    //     let r = new RegExp(/^(\d|\w)+@(\d|\w)+\.\w+$/,'i')
-
-    //     if(email) {
-    //         this.setState({
-    //             emailErrorMsg: r.test(email)? '':'Invalid email address'
-    //         })
-    //     }
-    // }
-
-
 
     onRepeatPasswordBlur(evt) {
         let { register_password, register_repeatPassword } = this.state
@@ -125,14 +119,6 @@ export default class Login extends React.Component {
             })
         }
     }
-    // onRepeatPasswordBlur(evt) {
-    //     let { password, repeatPassword } = this.state
-    //     if(password && repeatPassword) {
-    //         this.setState({
-    //             repeatPasswordErrorMsg: password === repeatPassword ? '':'Password is not same'
-    //         })
-    //     }
-    // }
 
     validateOnRegister() {
         let { register_email, register_password, register_repeatPassword, register_emailErrorMsg, register_repeatPasswordErrorMsg } = this.state
@@ -198,7 +184,37 @@ export default class Login extends React.Component {
     }
 
     onSubmitRegister() {
-        this.validateOnRegister()
+        let isvalid = this.validateOnRegister()
+        if(isvalid) {
+            let email = this.state.register_email
+            let password = this.state.register_password
+            this.setState({loading:true})
+
+            register(email, password).then(
+                res => {
+                    this.handleResponse(res)
+                }
+            ).catch(error => {
+                console.log(`error`,error)
+            }).finally(
+                () => this.setState({loading:false})
+            )
+        }
+    }
+
+    handleResponse(res) {
+        console.log(`res`,res)
+        if(res === CODE.EMAIL_EXISTED) {
+            this.setState({
+                register_emailErrorMsg:'Email is already registered'
+            })
+        }
+        else if(res === CODE.DONE) {
+            this.setState({
+                level_login: true,
+                level_reg: false
+            })
+        }
     }
 
     onClickForgot(evt) {
@@ -248,6 +264,8 @@ export default class Login extends React.Component {
 
         return(
             <div className="login">
+                <Loading show={this.state.loading} />
+                <Message message={this.state.message} onAnimationEnd={()=>this.setState({message:null})} />
                 <div className="container">
                     <div className={formBoxClassName}>
                         <div className="box boxShaddow"></div>  
