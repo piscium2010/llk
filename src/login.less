@@ -163,7 +163,7 @@
               height: 38px;
             }
         }
-        .registerBox {
+        .registerBox, .registerLinkBox {
             border-radius: 8px;
             background-color: #fff;
             right: 0;
@@ -172,7 +172,7 @@
             opacity: 0;
             visibility: hidden;
             backface-visibility: visible;
-            z-index: 1;
+            z-index: 0;
             .f_row {
                 label, input {
                     color: #fff;
@@ -215,7 +215,7 @@
                 transition-delay: 0.3s;
             }
         }
-        .forgetbox {
+        .forgetbox, .forgetLinkBox {
             background-color: #56ADC7;
             overflow: hidden;
             opacity: 0;
@@ -313,6 +313,7 @@
             .registerBox {
                 opacity: 1;
                 visibility: visible;
+                z-index: 2;
             }
             .regTag {
                 animation: regTag 0.3s cubic-bezier(.48,.55,.73,.78), regTag2 0.3s cubic-bezier(.48,.55,.73,.78);
@@ -331,6 +332,54 @@
                 color: #fff;
             }
         }
+        &.level-reg-link {
+            h2 {
+                border-left-color: #fff;
+                color: #fff;
+            }
+            .boxShaddow {
+                opacity: 0.7;
+                transform-origin: center top;
+                transform: translate(0px, -18px) scale(0.94);
+            }
+            .loginBox {
+                opacity: 0.7;
+                transform-origin: center top;
+                transform: translate(0px, -9px) scale(0.97);
+            }
+            .registerLinkBox {
+                opacity: 1;
+                visibility: visible;
+                padding-left:50px;
+                padding-right:50px;
+                z-index: 1;
+            }
+            .regTag {
+                animation: regTag 0.3s cubic-bezier(.48,.55,.73,.78), regTag2 0.3s cubic-bezier(.48,.55,.73,.78);
+                animation-fill-mode: forwards; 
+            }
+            .reg_bg {
+                animation: regMask 0.3s cubic-bezier(.48,.55,.73,.78);
+                animation-fill-mode: forwards; 
+            }
+            .form > div, .btn-large, h2 {
+                visibility: visible;
+                opacity: 1;
+                transform: translateX(0px);
+            }
+            p {
+                visibility: visible;
+                opacity: 1;
+                transform: translate(0px, 0px);
+                color:#fff;
+            }
+            .btn-large {
+                transition: all 0.3s cubic-bezier(.48,.55,.69,.9);
+                transform: translateX(0px);
+                transition-delay: 0.3s;
+            }
+        }
+        
         &.level-reg-revers {
             .regTag {
                 animation: regTagR 0.3s cubic-bezier(.48,.55,.73,.78), regTag2R 0.3s cubic-bezier(.48,.55,.73,.78);
@@ -366,7 +415,30 @@
                 color: #fff;
             }
         }
+        &.level-forget-link {
+            .boxShaddow {
+                opacity: 0.7;
+                transform-origin: center top;
+                transform: translate(0px, -18px) scale(0.94);
+            }
+            .loginBox {
+                opacity: 0.7;
+                transform-origin: center top;
+                transform: translate(0px, -9px) scale(0.97);
+            }
+            .forgetLinkBox {
+                transform: translate(0px, 0px) scale(1);
+                opacity: 1;
+                visibility: visible;
+                p, form > div, .btn, h2 {
+                    visibility: visible;
+                    opacity: 1;
+                    transform: translate(0px, 0px);
+                }
+            }
+        }
     }
+
     @keyframes back {
         0% { transform: translateX(0px); }
         70% { transform: translateX(-13px); }

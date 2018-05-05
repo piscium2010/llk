@@ -59,10 +59,12 @@ export default class Login extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            level_login: true,
-            level_reg: false,
-            level_forget: false,
-            shakeIfEmpty: false,
+            level-login: true,
+            level-reg: false,
+            level-forget: false,
+            level: 'level-login',
+
+            //shakeIfEmpty: false,
 
             login_email: null,
             login_password: null,
@@ -89,13 +91,13 @@ export default class Login extends React.Component {
         this.onClickForgot = this.onClickForgot.bind(this)
         this.onClickBack = this.onClickBack.bind(this)
         this.onChange = this.onChange.bind(this)
-        this.onGo = this.onGo.bind(this)
         this.onSubmitRegister = this.onSubmitRegister.bind(this)
         this.onEmailBlur = this.onEmailBlur.bind(this)
         this.onRepeatPasswordBlur = this.onRepeatPasswordBlur.bind(this)
         this.validateOnLogin = this.validateOnLogin.bind(this)
         this.validateOnRegister = this.validateOnRegister.bind(this)
-        
+        this.onConfirmRegister = this.onConfirmRegister.bind(this)
+        this.onClickResetPassword = this.onClickResetPassword.bind(this)
     }
 
     onEmailBlur(name) {
@@ -103,11 +105,12 @@ export default class Login extends React.Component {
 
             let email = this.state[name]
             let r = new RegExp(/^(\d|\w)+@(\d|\w)+\.\w+$/,'i')
-            if(email) {
-                this.setState({
-                    [name + 'ErrorMsg']: r.test(email)? '':'Invalid email address'
-                })
-            }
+            //dev
+            // if(email) {
+            //     this.setState({
+            //         [name + 'ErrorMsg']: r.test(email)? '':'Invalid email address'
+            //     })
+            // }
         }
     }
 
@@ -174,8 +177,7 @@ export default class Login extends React.Component {
 
     onClickRegister() {
         this.setState({
-            level_login: !this.state.level_login,
-            level_reg: !this.state.level_reg
+            level: this.state.level === 'level-login' ? 'level-reg' : 'level-login'
         })
     }
 
@@ -203,7 +205,6 @@ export default class Login extends React.Component {
     }
 
     handleResponse(res) {
-        console.log(`res`,res)
         if(res === CODE.EMAIL_EXISTED) {
             this.setState({
                 register_emailErrorMsg:'Email is already registered'
@@ -211,8 +212,9 @@ export default class Login extends React.Component {
         }
         else if(res === CODE.DONE) {
             this.setState({
-                level_login: true,
-                level_reg: false
+                level-login: true,
+                level-reg: false,
+                level: 'level-reg-link'
             })
         }
     }
@@ -220,16 +222,30 @@ export default class Login extends React.Component {
     onClickForgot(evt) {
         evt.preventDefault()
         this.setState({
-            level_forget: true,
-            level_reg: false
+            level-forget: true,
+            level-reg: false,
+            level: 'level-forget'
         })
     }
 
     onClickBack(evt) {
         evt.preventDefault()
         this.setState({
-            level_forget: false,
-            level_login: true
+            level-forget: false,
+            level-login: true,
+            level: 'level-login'
+        })
+    }
+
+    onConfirmRegister(evt) {
+        this.setState({
+            level: 'level-login'
+        })
+    }
+
+    onClickResetPassword(evt) {
+        this.setState({
+            level: 'level-forget-link'
         })
     }
 
@@ -241,25 +257,14 @@ export default class Login extends React.Component {
         }
     }
 
-    onGo() {
-        this.setState({
-            shakeIfEmpty: true
-        }, () => {
-            setTimeout(() => {
-                this.setState({
-                    shakeIfEmpty: false
-                })
-            }, 2000)
-        })
-    }
-
     render() {
         let formBoxClassName = classnames({
             formBox: true,
-            "level-login": this.state.level_login,
-            "level-reg": this.state.level_reg,
-            "level-reg-reverse": this.state.level_reg,
-            "level-forget": this.state.level_forget
+            "level-login": this.state.level === 'level-login',
+            "level-reg": this.state.level === 'level-reg',
+            'level-reg-link': this.state.level === 'level-reg-link',
+            "level-forget": this.state.level === 'level-forget',
+            'level-forget-link': this.state.level === 'level-forget-link'
         })
 
         return(
@@ -294,52 +299,72 @@ export default class Login extends React.Component {
                         </form>
                         </div>
                         <div className="box forgetbox">
-                        <a href="#" className="back icon-back" onClick={this.onClickBack} >
-                            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 199.404 199.404" style={{"enable-background":"new 0 0 199.404 199.404"}} xmlSpace="preserve">
-                                <polygon points="199.404,81.529 74.742,81.529 127.987,28.285 99.701,0 0,99.702 99.701,199.404 127.987,171.119 74.742,117.876 199.404,117.876 "/>
-                            </svg>
-                        </a>
-                        <h2>Reset Password</h2>
-                        <form className="form">
-                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, </p>
-                            <InputField label={'Email'} 
-                                className={`f_row last ${this.state.shakeEmail?'shake':''}`} 
-                                type='text' 
-                                onChange={this.onChange('reset_email')} 
-                                errorMsg={this.state.reset_emailErrorMsg}
-                                onBlur={this.onEmailBlur('reset_email')}
-                            />
-                            <button className="btn">
-                                <span>Reset</span>
-                            </button>
-                        </form>
+                            <a href="#" className="back icon-back" onClick={this.onClickBack} >
+                                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 199.404 199.404" style={{"enable-background":"new 0 0 199.404 199.404"}} xmlSpace="preserve">
+                                    <polygon points="199.404,81.529 74.742,81.529 127.987,28.285 99.701,0 0,99.702 99.701,199.404 127.987,171.119 74.742,117.876 199.404,117.876 "/>
+                                </svg>
+                            </a>
+                            <h2>Reset Password</h2>
+                            <form className="form">
+                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, </p>
+                                <InputField label={'Email'} 
+                                    className={`f_row last ${this.state.shakeEmail?'shake':''}`} 
+                                    type='text' 
+                                    onChange={this.onChange('reset_email')} 
+                                    errorMsg={this.state.reset_emailErrorMsg}
+                                    onBlur={this.onEmailBlur('reset_email')}
+                                />
+                                <button className="btn" onClick={this.onClickResetPassword}>
+                                    <span>Reset</span>
+                                </button>
+                            </form>
+                        </div>
+                        <div className="box forgetLinkBox">
+                            <a href="#" className="back icon-back" onClick={this.onClickBack} >
+                                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 199.404 199.404" style={{"enable-background":"new 0 0 199.404 199.404"}} xmlSpace="preserve">
+                                    <polygon points="199.404,81.529 74.742,81.529 127.987,28.285 99.701,0 0,99.702 99.701,199.404 127.987,171.119 74.742,117.876 199.404,117.876 "/>
+                                </svg>
+                            </a>
+                            <h2>Reset Password</h2>
+                            <form className="form">
+                                <p>A link has been sent to your email. Please visit your email to reset password.</p>
+                                <button className="btn">
+                                    <span>OK</span>
+                                </button>
+                            </form>
                         </div>
                         <div className="box registerBox">
-                        <span className="reg_bg"></span>
-                        <h2>Register</h2>
-                        <form className="form">
-                            <InputField label={'Email'} 
-                                className={`f_row ${this.state.shakeEmail?'shake':''}`} 
-                                type='text' 
-                                onChange={this.onChange('register_email')} 
-                                errorMsg={this.state.register_emailErrorMsg}
-                                onBlur={this.onEmailBlur('register_email')}
-                            />
-                            <InputField label={'Password'} 
-                                className={`f_row ${this.state.shakePassword?'shake':''}`} 
-                                type='password' 
-                                onChange={this.onChange('register_password')} 
-                                errorMsg={this.state.register_passwordErrorMsg}
-                            />
-                            <InputField label={'Repeat Password'} 
-                                className={`f_row last ${this.state.shakeRepeatPassword?'shake':''}`} 
-                                type='password' 
-                                onChange={this.onChange('register_repeatPassword')} 
-                                errorMsg={this.state.register_repeatPasswordErrorMsg}
-                                onBlur={this.onRepeatPasswordBlur}
-                            />
-                            <button className="btn-large" onClick={this.onSubmitRegister}>Go</button>
-                        </form>
+                            <span className="reg_bg"></span>
+                            <h2>Register</h2>
+                            <form className="form">
+                                <InputField label={'Email'}
+                                    className={`f_row ${this.state.shakeEmail ? 'shake' : ''}`}
+                                    type='text'
+                                    onChange={this.onChange('register_email')}
+                                    errorMsg={this.state.register_emailErrorMsg}
+                                    onBlur={this.onEmailBlur('register_email')}
+                                />
+                                <InputField label={'Password'}
+                                    className={`f_row ${this.state.shakePassword ? 'shake' : ''}`}
+                                    type='password'
+                                    onChange={this.onChange('register_password')}
+                                    errorMsg={this.state.register_passwordErrorMsg}
+                                />
+                                <InputField label={'Repeat Password'}
+                                    className={`f_row last ${this.state.shakeRepeatPassword ? 'shake' : ''}`}
+                                    type='password'
+                                    onChange={this.onChange('register_repeatPassword')}
+                                    errorMsg={this.state.register_repeatPasswordErrorMsg}
+                                    onBlur={this.onRepeatPasswordBlur}
+                                />
+                                <button className="btn-large" onClick={this.onSubmitRegister}>Go</button>
+                            </form>
+                        </div>
+                        <div className="box registerLinkBox">
+                            <span className="reg_bg"></span>
+                            <h2>Register</h2>
+                            <p>A link has been sent to your email. Please visit your email to activate your account.</p>
+                            <button className="btn-large" onClick={this.onConfirmRegister}>Ok</button>
                         </div>
                         <a href="#" className="regTag icon-add" onClick={this.onClickRegister}>
                             <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 357 357" style={{"enable-background":"new 0 0 357 357"}} xmlSpace="preserve">
