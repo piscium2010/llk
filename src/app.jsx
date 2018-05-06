@@ -9,6 +9,7 @@ import Course from './course'
 import Message from './alerts'
 import GameLoader from './game'
 import Login from './login'
+import Nav from './nav'
 
 
 
@@ -18,7 +19,8 @@ export default class App extends React.Component{
         return (
             <Router>
                 <React.Fragment>
-                    <Route exact path="/" component={Login} />
+                    <Route exact path="/" component={Home} />
+                    <Route path="/" component={Nav} />
                     <Route path="/courses/:name" component={Course} />
                     <Route exact path="/courses" component={Courses} />
                     <Route path="/game/:name" component={GameLoader}/>

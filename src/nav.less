@@ -1,0 +1,25 @@
+@nav-height: 60px;
+
+.app {
+    &.nav {
+        position: fixed;
+        background: #191919;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: @nav-height;
+        z-index: 3;
+
+        a {
+            list-style: none;
+            text-decoration: none;
+            height: @nav-height;
+            line-height: @nav-height;
+            color:#a4a4a4;
+            &:hover {
+                color: #fff;
+            }
+        }
+
+    }
+}

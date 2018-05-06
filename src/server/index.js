@@ -7,8 +7,22 @@ server.listen(3000);
 
 if (module.hot) {
     module.hot.accept("./server", () => {
-        server.removeListener("request", currentApp);
-        server.on("request", app);
-        currentApp = app;
+        reload()
     });
+    module.hot.accept("./db", () => {
+        reload()
+    });
+    module.hot.accept("./util", () => {
+        reload()
+    });
+    module.hot.accept("./email", () => {
+        reload()
+    });
+}
+
+function reload() {
+    console.log(`reload`,)
+    server.removeListener("request", currentApp);
+    server.on("request", app);
+    currentApp = app;
 }

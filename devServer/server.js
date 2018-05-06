@@ -21,7 +21,7 @@
 /******/ 	}
 /******/
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b7896db1e405b7e5eb9d"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "602f4d23261a2c838bb4"; // eslint-disable-line no-unused-vars
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
@@ -772,7 +772,31 @@ eval("/* WEBPACK VAR INJECTION */(function(__resourceQuery) {/*\r\n\tMIT License
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\nvar CODE = exports.CODE = {\n    EMAIL_EXISTED: 'EMAIL_EXISTED',\n    WRONG_CREDENTIAL: 'WRONG_CREDENTIAL',\n    DONE: 'DONE'\n};\n\n//# sourceURL=webpack:///./src/server/constants.js?");
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\nvar CODE = exports.CODE = {\n    ERROR: 'ERROR',\n    EMAIL_EXISTED: 'EMAIL_EXISTED',\n    INVALID: 'INVALID',\n    WRONG_CREDENTIAL: 'WRONG_CREDENTIAL',\n    DONE: 'DONE',\n    NOT_LOGIN: 'NOT_LOGIN',\n    NOT_ACTIVE: 'NOT_ACTIVE'\n};\n\n//# sourceURL=webpack:///./src/server/constants.js?");
+
+/***/ }),
+
+/***/ "./src/server/db.js":
+/*!**************************!*\
+  !*** ./src/server/db.js ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.getCourses = exports.getLink = exports.addUserLink = exports.saveUser = exports.findUser = exports.addUser = exports.tables = undefined;\n\nvar _util = __webpack_require__(/*! ./util */ \"./src/server/util.js\");\n\nvar _mongodb = __webpack_require__(/*! mongodb */ \"mongodb\");\n\nvar _mongodb2 = _interopRequireDefault(_mongodb);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n//var MongoClient = require('mongodb').MongoClient;\nvar MongoClient = _mongodb2.default.MongoClient;\nvar url = \"mongodb://localhost:27017/llk\";\n\nfunction connect() {\n  return new Promise(function (resolve, reject) {\n    MongoClient.connect(url, function (err, db) {\n      if (err) {\n        reject(err);\n      }\n      resolve(db);\n    });\n  });\n}\n\nfunction exec(action) {\n  var _db = void 0;\n  return connect().then(function (db) {\n    _db = db;\n    return action.bind(null, _db.db('llk'))();\n  }).then(function (result) {\n    _db.close();\n    return result;\n  }).catch(function (err) {\n    _db.close();\n    throw err;\n  });\n}\n\n// MongoClient.connect(url, function(err, db) {\n//   if (err) throw err;\n//   let dbo = db.db(\"llk\");\n\n//   dbo.createCollection(\"users\", function(err, res) {\n//     if (err) throw err;\n//     db.close()\n//   });\n\n//   console.log(\"Collection created!\");\n// });\n\n/*\n* init db  \n*/\n// let _db\n// connect().then(db=>{\n//   _db = db\n//   return Promise.all([\n//     db.createCollection('users'),\n//     db.createCollection('courses')\n//   ])\n// }).then(()=>{\n//   _db.close()\n// }).catch(err=>{\n//   _db.close()\n//   throw err\n// })\n\nvar tables = exports.tables = {\n  users: 'users',\n  courses: 'courses',\n  user_links: 'user_links'\n};\n\nexec(function (db) {\n  return Promise.all([db.createCollection(tables.users), db.createCollection(tables.courses), db.createCollection(tables.user_links)]);\n});\n\n//test()\n\n\n// function action(n,t) {\n//   return new Promise((res,rej)=>{\n//     console.log(n)\n//     if(t) {\n//       setTimeout(()=>{\n//         res()\n//       },t)\n//     }\n//     else {\n//       res()\n//     }\n//   })\n// }\n\n// function test() {\n//   action('1').then(()=>{\n//     return action('2')\n//   }).then(()=>{\n//     console.log(`promise.finally`,Promise.finally)\n//   })\n// }\n\nvar addUser = exports.addUser = function addUser(email, password) {\n  return exec(function (db) {\n    return db.collection(tables.users).insertOne({\n      email: email,\n      password: password,\n      active: false,\n      registerDate: new Date().toISOString()\n    });\n  });\n};\n\nvar findUser = exports.findUser = function findUser(email) {\n  return exec(function (db) {\n    console.log('db find user', email);\n    return db.collection(tables.users).findOne({ email: email });\n  });\n};\n\nvar saveUser = exports.saveUser = function saveUser(query, user) {\n  return exec(function (db) {\n    return new Promise(function (resolve, reject) {\n      db.collection(tables.users).updateOne(query, { $set: user }, function (err, res) {\n        if (err) {\n          reject(err);\n        }\n        resolve(res);\n      });\n    });\n  });\n};\n\nvar addUserLink = exports.addUserLink = function addUserLink(email, type, data) {\n  return exec(function (db) {\n    var code = (0, _util.getRandomCode)(email);\n    console.log('code', code);\n    var document = {\n      email: email,\n      code: code,\n      type: type,\n      data: data,\n      date: new Date().toISOString()\n    };\n    return db.collection(tables.user_links).insertOne(document).then(function () {\n      return code;\n    });\n  });\n};\n\nvar getLink = exports.getLink = function getLink(code) {\n  return exec(function (db) {\n    return db.collection(tables.user_links).findOne({\n      code: code\n    });\n  });\n};\n\nvar getCourses = exports.getCourses = function getCourses(email) {\n  return exec(function (db) {\n    console.log('db getcourse');\n    return new Promise(function (resolve, reject) {\n      db.collection(tables.courses).find({ email: email }).toArray(function (err, res) {\n        console.log('db getcourse res', res);\n        if (err) reject(err);\n        resolve(res);\n      });\n    });\n  });\n};\n\n// export function addUser(email, password) {\n//   let _db\n//   connect().then(db => {\n//     _db = db\n//     return _db.collection('users').insertOne({\n//       email,\n//       password,\n//       registerDate: new Date().toISOString()\n//     })\n//   }).finally(() => {\n//     _db.close()\n//   })\n// }\n\n// export function findUser(email) {\n//   let _db\n//   connect().then(db=>{\n//     _db = db\n//     let user = _db.collection('users').find({email})\n//     _db.close()\n//     return user\n//   })\n// }\n\n//# sourceURL=webpack:///./src/server/db.js?");
+
+/***/ }),
+
+/***/ "./src/server/email.js":
+/*!*****************************!*\
+  !*** ./src/server/email.js ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.sendMail = sendMail;\n\nvar _nodemailer = __webpack_require__(/*! nodemailer */ \"nodemailer\");\n\nvar _nodemailer2 = _interopRequireDefault(_nodemailer);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n//var nodemailer = require('nodemailer');\n\nvar transporter = _nodemailer2.default.createTransport({\n  host: 'smtp.qq.com',\n  port: 465,\n  secure: true,\n  auth: {\n    user: '541032442@qq.com',\n    pass: 'gesjbtfngrbnbceg'\n  }\n});\n\nvar defaultMailOptions = {\n  from: '541032442@qq.com',\n  to: 'piscium2010@163.com',\n  subject: 'Sending Email using Node.js',\n  html: '<h1>Welcome</h1><p>That was easy!</p>'\n};\n\n//   transporter.sendMail(mailOptions, function(error, info){\n//     if (error) {\n//       console.log(error);\n//     } else {\n//       console.log('Email sent: ' + info.response);\n//     }\n//   });\n\n\nfunction sendMail(to, subject, html, callback) {\n  var mailOptions = Object.assign({}, defaultMailOptions, { to: to, subject: subject, html: html });\n  console.log('mailOptions', mailOptions);\n  transporter.sendMail(mailOptions, callback);\n\n  // transporter.sendMail(mailOptions, function(error, info){\n  //     if (error) {\n  //       throw error\n  //     } else {\n  //       console.log('Email sent: ' + info.response);\n  //       if(callback) {\n  //           callback()\n  //       }\n  //     }\n  // });\n}\n\n//# sourceURL=webpack:///./src/server/email.js?");
 
 /***/ }),
 
@@ -784,7 +808,7 @@ eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nvar _http = __webpack_require__(/*! http */ \"http\");\n\nvar _http2 = _interopRequireDefault(_http);\n\nvar _server = __webpack_require__(/*! ./server */ \"./src/server/server.js\");\n\nvar _server2 = _interopRequireDefault(_server);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar server = _http2.default.createServer(_server2.default);\nvar currentApp = _server2.default;\nserver.listen(3000);\n\nif (true) {\n    module.hot.accept(/*! ./server */ \"./src/server/server.js\", function(__WEBPACK_OUTDATED_DEPENDENCIES__) { (function () {\n        server.removeListener(\"request\", currentApp);\n        server.on(\"request\", _server2.default);\n        currentApp = _server2.default;\n    })(__WEBPACK_OUTDATED_DEPENDENCIES__); });\n}\n\n//# sourceURL=webpack:///./src/server/index.js?");
+eval("\n\nvar _http = __webpack_require__(/*! http */ \"http\");\n\nvar _http2 = _interopRequireDefault(_http);\n\nvar _server = __webpack_require__(/*! ./server */ \"./src/server/server.js\");\n\nvar _server2 = _interopRequireDefault(_server);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar server = _http2.default.createServer(_server2.default);\nvar currentApp = _server2.default;\nserver.listen(3000);\n\nif (true) {\n    module.hot.accept(/*! ./server */ \"./src/server/server.js\", function(__WEBPACK_OUTDATED_DEPENDENCIES__) { (function () {\n        reload();\n    })(__WEBPACK_OUTDATED_DEPENDENCIES__); });\n    module.hot.accept(/*! ./db */ \"./src/server/db.js\", function(__WEBPACK_OUTDATED_DEPENDENCIES__) { (function () {\n        reload();\n    })(__WEBPACK_OUTDATED_DEPENDENCIES__); });\n    module.hot.accept(/*! ./util */ \"./src/server/util.js\", function(__WEBPACK_OUTDATED_DEPENDENCIES__) { (function () {\n        reload();\n    })(__WEBPACK_OUTDATED_DEPENDENCIES__); });\n    module.hot.accept(/*! ./email */ \"./src/server/email.js\", function(__WEBPACK_OUTDATED_DEPENDENCIES__) { (function () {\n        reload();\n    })(__WEBPACK_OUTDATED_DEPENDENCIES__); });\n}\n\nfunction reload() {\n    console.log(\"reload\");\n    server.removeListener(\"request\", currentApp);\n    server.on(\"request\", _server2.default);\n    currentApp = _server2.default;\n}\n\n//# sourceURL=webpack:///./src/server/index.js?");
 
 /***/ }),
 
@@ -796,7 +820,19 @@ eval("\n\nvar _http = __webpack_require__(/*! http */ \"http\");\n\nvar _http2 =
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\n\nvar _constants = __webpack_require__(/*! ./constants */ \"./src/server/constants.js\");\n\nvar express = __webpack_require__(/*! express */ \"express\");\nvar app = express();\nvar bodyParser = __webpack_require__(/*! body-parser */ \"body-parser\");\nvar session = __webpack_require__(/*! express-session */ \"express-session\");\n\napp.use(function (req, res, next) {\n    res.header(\"Access-Control-Allow-Origin\", \"*\");\n    res.header(\"Access-Control-Allow-Credentials\", true);\n    res.header(\"Access-Control-Allow-Methods\", \"POST, GET, PUT, DELETE, OPTIONS\");\n    res.header(\"Access-Control-Allow-Headers\", \"Origin, X-Requested-With, Content-Type, Accept\");\n    next();\n});\n\napp.use(session({\n    secret: 'keyboard cat',\n    resave: false,\n    saveUninitialized: true\n}));\n\napp.use(bodyParser.urlencoded({ extended: false }));\napp.use(bodyParser.json());\nvar site = 'llk';\n\napp.get('/' + site + '/', function (req, res) {\n    console.log('session', req.session);\n    req.session.uid = 'udi';\n    res.send('hello srts');\n});\n\napp.put('/' + site + '/addcourse', function (req, res) {\n    var courseName = req.body.courseName;\n    // console.log(`addcourse session`,req.session)\n    // console.log(`session.uid`,req.session.uid)\n    // console.log(`session.uid`,req.session['uid'])\n\n    res.send('add cdss');\n});\n\napp.post('/' + site + '/addcourse', function (req, res) {\n    console.log('param', req.body);\n    res.send('add');\n});\n\napp.post('/' + site + '/register', function (req, res) {\n    console.log('registe.body', req.body);\n    res.setHeader('Content-Type', 'text/plain');\n    setTimeout(function () {\n        res.send(_constants.CODE.DONE);\n    }, 3000);\n});\n\nexports.default = app;\n\n//# sourceURL=webpack:///./src/server/server.js?");
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\n\nvar _constants = __webpack_require__(/*! ./constants */ \"./src/server/constants.js\");\n\nvar _db = __webpack_require__(/*! ./db */ \"./src/server/db.js\");\n\nvar _util = __webpack_require__(/*! ./util */ \"./src/server/util.js\");\n\nvar _email = __webpack_require__(/*! ./email */ \"./src/server/email.js\");\n\nvar express = __webpack_require__(/*! express */ \"express\");\nvar app = express();\nvar bodyParser = __webpack_require__(/*! body-parser */ \"body-parser\");\nvar session = __webpack_require__(/*! express-session */ \"express-session\");\n\napp.use(function (req, res, next) {\n    res.header(\"Access-Control-Allow-Origin\", \"*\");\n    res.header(\"Access-Control-Allow-Credentials\", true);\n    res.header(\"Access-Control-Allow-Methods\", \"POST, GET, PUT, DELETE, OPTIONS\");\n    res.header(\"Access-Control-Allow-Headers\", \"Origin, X-Requested-With, Content-Type, Accept\");\n    res.header('Content-Type', 'text/plain');\n    next();\n});\n\napp.use(session({\n    secret: 'keyboard cat',\n    resave: false,\n    saveUninitialized: true\n}));\n\napp.use(bodyParser.urlencoded({ extended: false }));\napp.use(bodyParser.json());\n\nvar site = 'llk';\nvar apiHost = 'http://localhost:3000/llk';\n\napp.get('/' + site + '/', function (req, res) {\n    console.log('session', req.session);\n    //req.session.uid = 'udi'\n    res.send('hello srts');\n});\n\napp.get('/' + site + '/findUser', function (req, res) {\n    console.log('find User');\n});\n\n//user links\napp.get('/' + site + '/links', function (req, res) {\n    console.log('links', req.query);\n    var code = req.query.code;\n    var msg = '';\n    (0, _db.getLink)(code).then(function (_ref) {\n        var email = _ref.email,\n            type = _ref.type;\n\n        if (email) {\n            console.log('result.type', type);\n            switch (type) {\n                case 'activate':\n                    msg = 'your account has been activated';\n                    return (0, _db.saveUser)({ email: email }, { active: true });\n                default:\n                    return Promise.reject();\n            }\n        }\n    }).then(function () {\n        res.send(msg);\n    }).catch(function (err) {\n        console.log('err', err);\n        res.send(_constants.CODE.ERROR);\n    });\n});\n\n//get courses\napp.get('/' + site + '/courses', function (req, res) {\n    var email = req.session.uid;\n    console.log('server courses session', req.session);\n\n    (0, _db.getCourses)(email).then(function (courses) {\n        if (courses) {\n            res.send(JSON.stringify(courses));\n        } else {\n            res.send(JSON.stringify(['examples']));\n        }\n    });\n});\n\napp.put('/' + site + '/addcourse', function (req, res) {\n    var courseName = req.body.courseName;\n    res.send('add cd');\n});\n\n//login\napp.post('/' + site + '/login', function (req, res) {\n    var _req$body = req.body,\n        email = _req$body.email,\n        password = _req$body.password;\n\n    console.log('server login', email, password);\n    (0, _db.findUser)(email).then(function (user) {\n        console.log('server login', user);\n        console.log('server login password', password);\n        if (!user) {\n            res.send(_constants.CODE.WRONG_CREDENTIAL);\n            return;\n        }\n\n        if (!user.active) {\n            res.send(_constants.CODE.NOT_ACTIVE);\n            return;\n        }\n\n        if (password.trim() !== user.password.trim()) {\n            console.log('', password.trim(), user.password.trim());\n            res.send(_constants.CODE.WRONG_CREDENTIAL);\n            return;\n        }\n\n        req.session.uid = email;\n        console.log('login session', req.session);\n        res.send(_constants.CODE.DONE);\n    });\n});\n\napp.post('/' + site + '/addcourse', function (req, res) {\n    console.log('param', req.body);\n    res.send('add');\n});\n\napp.post('/' + site + '/register', function (req, res) {\n    //console.log(`register`)\n\n    var _req$body2 = req.body,\n        email = _req$body2.email,\n        password = _req$body2.password;\n\n    console.log('email', email, password, req.body);\n\n    (0, _db.findUser)(email).then(function (result) {\n        if (result) {\n            if (result.active) {\n                res.send(_constants.CODE.EMAIL_EXISTED);\n            } else {\n                res.send(_constants.CODE.NOT_ACTIVE);\n            }\n            return;\n        }\n\n        (0, _db.addUser)(email, password).then(function () {\n            return (0, _db.addUserLink)(email, 'activate');\n        }).then(function (code) {\n            //send activate link\n            return new Promise(function (resolve, reject) {\n                var html = '<h1>Please click below link to activate your account</h1><p>' + apiHost + '/links?code=' + code + '</p>';\n                (0, _email.sendMail)(email, 'Please activate your account', html, function (err, info) {\n                    if (err) {\n                        reject(err);\n                    }\n                    resolve();\n                });\n            });\n        }).then(function () {\n            res.send(_constants.CODE.DONE);\n        }).catch(function (err) {\n            console.log('err', err);\n            res.send(_constants.CODE.ERROR);\n        });\n    });\n});\n\nexports.default = app;\n\n//# sourceURL=webpack:///./src/server/server.js?");
+
+/***/ }),
+
+/***/ "./src/server/util.js":
+/*!****************************!*\
+  !*** ./src/server/util.js ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n    value: true\n});\nexports.getRandomCode = getRandomCode;\n\nvar _crypto = __webpack_require__(/*! crypto */ \"crypto\");\n\nfunction getRandomCode(str) {\n    var date = new Date();\n    var name = '' + str + date.toISOString();\n    var hash = (0, _crypto.createHash)('md5').update(name).digest('hex');\n    return hash;\n}\n\n//# sourceURL=webpack:///./src/server/util.js?");
 
 /***/ }),
 
@@ -819,6 +855,17 @@ eval("__webpack_require__(/*! webpack/hot/poll?1000 */\"./node_modules/webpack/h
 /***/ (function(module, exports) {
 
 eval("module.exports = require(\"body-parser\");\n\n//# sourceURL=webpack:///external_%22body-parser%22?");
+
+/***/ }),
+
+/***/ "crypto":
+/*!*************************!*\
+  !*** external "crypto" ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"crypto\");\n\n//# sourceURL=webpack:///external_%22crypto%22?");
 
 /***/ }),
 
@@ -852,6 +899,28 @@ eval("module.exports = require(\"express-session\");\n\n//# sourceURL=webpack://
 /***/ (function(module, exports) {
 
 eval("module.exports = require(\"http\");\n\n//# sourceURL=webpack:///external_%22http%22?");
+
+/***/ }),
+
+/***/ "mongodb":
+/*!**************************!*\
+  !*** external "mongodb" ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"mongodb\");\n\n//# sourceURL=webpack:///external_%22mongodb%22?");
+
+/***/ }),
+
+/***/ "nodemailer":
+/*!*****************************!*\
+  !*** external "nodemailer" ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("module.exports = require(\"nodemailer\");\n\n//# sourceURL=webpack:///external_%22nodemailer%22?");
 
 /***/ })
 

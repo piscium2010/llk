@@ -9,7 +9,7 @@ module.exports = {
       app: './src/index.jsx'
     },
     output: {
-      filename: '[name].bundle.js',
+      filename: '[name].[hash].js',
       path: path.resolve(__dirname, 'public')
     },
     target: 'web',
@@ -22,6 +22,11 @@ module.exports = {
     },
     resolve: {
       extensions: ['.js', '.jsx']
+    },
+    watchOptions: {
+      aggregateTimeout: 300,
+      poll: 1000, //seems to stablise HMR file change detection
+      ignored: /node_modules/
     },
     module : {
         rules : [
@@ -42,6 +47,7 @@ module.exports = {
       },
     devtool: 'inline-source-map',
     plugins: [
+      new CleanWebpackPlugin('public'),
       new webpack.NamedModulesPlugin(),
       new HtmlWebpackPlugin({
         title: 'My App',

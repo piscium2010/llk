@@ -5,6 +5,8 @@ import { getCourses, addCourse } from './api'
 import Loading from './loading'
 import { InlineCommand, Command, CommandBar } from './common'
 import { Link } from './common'
+import Login from './login'
+import { app } from './api'
 
 const CourseItem = props => <Link to={`/game/${props.name}`}>
     <li>
@@ -25,20 +27,42 @@ export default class Courses extends React.Component {
         this.state = {
             courses: [],
             edit: false,
-            loading: true
+            loading: true,
+            showLogin: false
         }
 
         this.onAddCourse = this.onAddCourse.bind(this)
         this.onEditCourse = this.onEditCourse.bind(this)
+        this.onLogin = this.onLogin.bind(this)
     }
     componentDidMount() {
-        getCourses().then(courses => this.setState({
-            courses,
-            loading: false
-        }))
+        // getCourses().then(courses => this.setState({
+        //     courses,
+        //     loading: false
+        // }))
+        getCourses().then(courses => {
+            console.log(`courses courses`,courses)
+            this.setState({
+                courses,
+                loading: false
+            })
+        })
+    }
+
+    onLogin() {
+        // console.log(`courses login`,)
+        // this.setState({loading:true, showLogin: false},()=>{
+        //     getCourses().then(courses => this.setState({
+        //         courses
+        //     })).finally(()=>{
+        //         this.setState({loading: false})
+        //     })
+        // })
     }
 
     render() {
+        const { showLogin } = this.state
+
         return (
             <div className="courses">
                 <div className="main">
@@ -57,18 +81,25 @@ export default class Courses extends React.Component {
                     </CommandBar>
                 </div>
                 <Loading show={this.state.loading} />
+                <Login show={showLogin} onClose={() => this.setState({ showLogin: false })} />
+                
             </div>
         )
     }
 
     onAddCourse() {
-        this.setState({loading:true})
-        addCourse().then(courses => {
-            this.setState({
-                courses,
-                loading: false
+        if (app.isLogin) {
+            this.setState({ loading: true })
+            addCourse().then(courses => {
+                this.setState({
+                    courses,
+                    loading: false
+                })
             })
-        })
+        }
+        else {
+            this.setState({ showLogin: true })
+        }
     }
 
     onEditCourse() {

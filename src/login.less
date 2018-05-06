@@ -1,4 +1,21 @@
 .login {
+    position: absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &::before {
+        content:'';
+        position: absolute;
+        top:0;
+        right:0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.45);
+    }
     input, button {
         &:focus, &:active {
             outline: none;
@@ -13,19 +30,6 @@
     h1, h2, h3, h4, h5, h6 {
         font-weight: bold;
         letter-spacing: 1px;
-    }
-    .container {
-        height: 100%;
-        width: 100%;
-        position: relative;
-        text-align: center;
-        &:before {
-            content: '';
-            height: 100%;
-            width: 0px;
-            display: inline-block;
-            vertical-align: middle;
-        }
     }
     .formBox {
         width: 460px;
