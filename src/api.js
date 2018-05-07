@@ -46,10 +46,15 @@ const data = [
 
 const apiHost = 'http://localhost:3000/llk'
 
+function myFetch(url, options) {
+    return fetch(url, Object.assign({}, options, { credentials: 'include' }))
+}
+
 function fetchJson(url, options) {
-    return fetch(url, Object.assign({}, options, { credentials: 'include' })).then(res => {
+    return myFetch(url, options).then(res => 
         res.text().then(result => {
             try {
+                console.log(`result`, JSON.parse(result))
                 return JSON.parse(result)
             } catch (err) {
                 console.error('api ', err);
@@ -58,7 +63,7 @@ function fetchJson(url, options) {
         }).catch(err => {
             throw err
         })
-    })
+    )
 }
 
 export function getCourses() {
@@ -67,6 +72,9 @@ export function getCourses() {
         return fetchJson(`${apiHost}/courses`,{
             method:'GET',
             headers: jsonHeader
+        }).then(c=>{
+            console.log(`c`,c)
+            return c
         })
     }
 
@@ -139,11 +147,11 @@ export function register(email, password) {
 }
 
 export function findUser(email) {
-    return fetch(`${apiHost}/findUser?email=${email}`, { method: 'GET' })
+    return myFetch(`${apiHost}/findUser?email=${email}`, { method: 'GET' })
 }
 
 export function login(email, password) {
-    return fetch(`${apiHost}/login`, { 
+    return myFetch(`${apiHost}/login`, { 
         method: 'POST',
         headers: jsonHeader,
         body: JSON.stringify({email, password})
@@ -155,6 +163,16 @@ export function login(email, password) {
             console.error(err);
             return res
         }
+    })
+}
+
+export function logout() {
+    return myFetch(`${apiHost}/logout`, { 
+        method: 'POST',
+        headers: jsonHeader,
+    }).then(res => {
+        console.log(`api logout`,)
+        app.setItem('email','')    
     })
 }
 

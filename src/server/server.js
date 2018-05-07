@@ -9,8 +9,8 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Credentials", true);
+    res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+    res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header('Content-Type', 'text/plain')
@@ -70,7 +70,7 @@ app.get(`/${site}/courses`, (req, res) => {
     console.log(`server courses session`,req.session)
 
     getCourses(email).then(courses => {
-        if(courses) {
+        if(courses && courses.length) {
             res.send(JSON.stringify(courses))
         }
         else {
@@ -87,10 +87,10 @@ app.put(`/${site}/addcourse`, (req, res) => {
 //login
 app.post(`/${site}/login`, (req, res) => {
     let { email, password } = req.body
-    console.log(`server login`,email, password)
+    //console.log(`server login`,email, password)
     findUser(email).then(user => {
-        console.log(`server login`,user)
-        console.log(`server login password`,password)
+        //console.log(`server login`,user)
+        //console.log(`server login password`,password)
         if(!user) {
             res.send(CODE.WRONG_CREDENTIAL)
             return
@@ -111,6 +111,11 @@ app.post(`/${site}/login`, (req, res) => {
         console.log(`login session`,req.session)
         res.send(CODE.DONE)
     })
+})
+
+app.post(`/${site}/logout`,(req, res)=>{
+    req.session.uid = ''
+    res.send(CODE.DONE)
 })
 
 app.post(`/${site}/addcourse`, (req, res) => {

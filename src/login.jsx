@@ -183,6 +183,7 @@ class Login extends React.Component {
     }
 
     onClickLogin(evt) {
+        evt.preventDefault()
         evt.stopPropagation()
         let valid = this.validateOnLogin()
         if(!valid) return
@@ -202,7 +203,11 @@ class Login extends React.Component {
                     //this.props.history.push('/')
                     break
                 case CODE.WRONG_CREDENTIAL:
-                    this.setState({login_emailErrorMsg:'Incorrect username or password'})
+                    this.setState({
+                        message: 'Incorrect username or password',
+                        messageType: 'alert-danger'
+                    })
+                    //this.setState({login_emailErrorMsg:'Incorrect username or password'})
                     break
                 default:
                     console.error('login login',res)
@@ -224,12 +229,16 @@ class Login extends React.Component {
                 res => {
                     if(res === CODE.EMAIL_EXISTED) {
                         this.setState({
-                            register_emailErrorMsg:'Email is already registered'
+                            //register_emailErrorMsg:'Email is already registered'
+                            message: 'Email is already registered',
+                            messageType: 'alert-danger'
                         })
                     }
                     else if(res === CODE.NOT_ACTIVE) {
                         this.setState({
-                            register_emailErrorMsg:'Your account is not active'
+                            //register_emailErrorMsg:'Your account is not active'
+                            message: 'Your account is not active',
+                            messageType: 'alert-danger'
                         })
                     }
                     else if(res === CODE.DONE) {
@@ -323,9 +332,9 @@ class Login extends React.Component {
         })
 
         return(
-            show && <div className="login" onClick={this.onClose}>
+                <div className="login" onClick={this.onClose}>
                 <Loading show={this.state.loading} />
-                <Message message={this.state.message} onAnimationEnd={()=>this.setState({message:null})} />
+                <Message message={this.state.message} type={this.state.messageType} onAnimationEnd={()=>this.setState({message:null})} />
                     <div className={formBoxClassName}>
                         <div className="box boxShaddow"></div>  
                         <div className="box loginBox">
@@ -349,9 +358,6 @@ class Login extends React.Component {
                             <button className="btn" onClick={this.onClickLogin}>
                                 <span>GO</span>
                             </button>
-                            {/* <button className="btn" onClick={this.onClickLogin}>
-                                <span>GOS</span>
-                            </button> */}
                             <div className="f_link">
                                 <a href="#" className="resetTag" onClick={this.onClickForgot} >Forgot your password?</a>
                             </div>
