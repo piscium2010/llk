@@ -1,4 +1,5 @@
 import React from 'react'
+import classnames from 'classnames'
 
 export default class Message extends React.Component {
     static defaultProps = {
@@ -8,12 +9,23 @@ export default class Message extends React.Component {
     }
 
     render() {
-        const { type, message, onAnimationEnd } = this.props
+        const { type, message, onAnimationEnd, onClose } = this.props
+        let className = classnames({
+            fadeOut: onClose ? false : true,
+            'alert-dismissible': onClose ? true : false
+        })
 
         return(
             message && <div className="mask" style={{display:'flex',justifyContent:'center',alignItems:'center'}} >
-                <div className={`alert ${type}`} role='alert' onAnimationEnd={onAnimationEnd}>
+                <div className={`${className} alert ${type}`} role='alert' onAnimationEnd={onAnimationEnd}>
                     {message}
+                    {
+                        onClose && 
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close" onClick={onClose}>
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    }
+                    
                 </div>
             </div>
         )

@@ -4,7 +4,7 @@ import Icon from './icons'
 import { Command, CommandBar, Link } from './common'
 import Message from './alerts'
 import Loading from './loading'
-import { saveCourse, getCourse } from './api'
+import { saveCourse, getCourse, CODE } from './api'
 
 export default class Course extends React.Component {
 
@@ -15,6 +15,7 @@ export default class Course extends React.Component {
             courseName: props.match.params.name,
             words: '',
             message: null,
+            messageType: 'alert-success',
             loading: true
         }
 
@@ -57,7 +58,7 @@ export default class Course extends React.Component {
                         </Link>
                     </CommandBar>
                 </div>
-                <Message message={this.state.message} onAnimationEnd={()=>this.setState({message:null})} />
+                <Message message={this.state.message} type={this.state.messageType} onAnimationEnd={()=>this.setState({message:null})} />
                 <Loading show={this.state.loading} />
             </div>
         )
@@ -73,11 +74,18 @@ export default class Course extends React.Component {
         this.setState({
             loading: true
         })
+        let { courseName, words } = this.state
 
-        saveCourse().then(()=>{
+        saveCourse(courseName, words).then(res=>{
+
             this.setState({
                 loading: false,
-                message: 'successful'
+                message: res === CODE.DONE ? 'successful' : 'failed',
+                messageType: res === CODE.DONE ? 'alert-success' : 'alert-danger'
+            })
+        }).finally(()=>{
+            this.setState({
+                loading: false
             })
         })
     }

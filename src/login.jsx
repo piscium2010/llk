@@ -190,17 +190,18 @@ class Login extends React.Component {
 
         let email = this.state.login_email
         let password = this.state.login_password
+
         this.setState({loading:true})
+
         login(email, password).then(res => {
-            
             switch(res) {
                 case CODE.DONE:
                     //app.email = email
                     //console.log(`login app.email set tt`)
                     //localStorage.setItem('email','tt')
-                    app.setItem('email',email)
-                    this.props.onClose()
-                    //this.props.history.push('/')
+                    //app.setItem('email',email)
+                    //this.props.onClose()
+                    this.props.history.goBack()
                     break
                 case CODE.WRONG_CREDENTIAL:
                     this.setState({
@@ -316,7 +317,8 @@ class Login extends React.Component {
 
     onClose(evt) {
         if(evt.target === evt.currentTarget) {
-            this.props.onClose(evt)
+            //this.props.onClose(evt)
+            this.props.history.goBack()
         }
     }
 
@@ -447,4 +449,4 @@ class Login extends React.Component {
     }
 }
 
-export default Login
+export default withRouter(Login)

@@ -1,5 +1,5 @@
 import { CODE } from './constants'
-import { addUser, findUser, addUserLink, saveUser, getLink, getCourses } from './db'
+import { addUser, findUser, addUserLink, saveUser, getLink, getCourses, saveCourse } from './db'
 import { getRandomCode } from './util'
 import { sendMail } from './email'
 
@@ -71,7 +71,7 @@ app.get(`/${site}/courses`, (req, res) => {
 
     getCourses(email).then(courses => {
         if(courses && courses.length) {
-            res.send(JSON.stringify(courses))
+            res.send(JSON.stringify(courses.map(c => c.courseName)))
         }
         else {
             res.send(JSON.stringify(['examples']))
@@ -82,6 +82,24 @@ app.get(`/${site}/courses`, (req, res) => {
 app.put(`/${site}/addcourse`, (req, res) => {
     let courseName = req.body.courseName
     res.send('add cd')
+})
+
+app.post(`/${site}/saveCourse`, (req, res) => {
+    let { courseName, words } = req.body
+    let uid = req.session.uid
+    console.log(`server save course`,uid, courseName, words)
+
+    if(!uid) {
+        res.send(CODE.NOT_LOGIN)
+    }
+    else{
+        saveCourse(uid, courseName, words).then(()=>{
+            res.send(CODE.DONE)
+        }).catch(err=>{
+            console.error(err)
+            res.send(CODE.ERROR)
+        })
+    }
 })
 
 //login

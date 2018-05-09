@@ -64,7 +64,7 @@ class Nav extends React.Component {
         console.log(`nav logout `,)
         logout().then(() => {
             console.log(`nav logout done`,)
-            this.props.history.push('/')
+            this.props.history.push('/llk')
         })
     }
 
@@ -78,20 +78,20 @@ class Nav extends React.Component {
         }
         return (
             <div className={classnames(mask)}>
-                <Login show={this.state.showLogin} onClose={this.hideLogin} />
+               
                 <div className="app nav">
                     <ul>
                         <li>
                             {
-                                app.email() ? 
+                                app.getUserId() ? 
                                 <Menu>
                                     <Icon width={28} height={28} name='account' />
                                     <div className="nav-dropdown-menu">
-                                        <a className="nav-dropdown-item" href="#" onClick={this.logout}>Log out</a>
+                                        <span className="nav-dropdown-item" onClick={this.logout}>Log out</span>
                                     </div>
                                 </Menu>
                                 : 
-                                <Link to='/login'><a href='#'>Sign in</a></Link>
+                                <Link to='/llk/login'><span className='nav-menu'>Sign in</span></Link>
                             }
                         </li>
                     </ul>

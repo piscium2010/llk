@@ -19,12 +19,12 @@ export default class App extends React.Component{
         return (
             <Router>
                 <React.Fragment>
-                    <Route exact path="/" component={Home} />
-                    <Route path="/" component={Nav} />
-                    <Route path="/login" component={Login} />
-                    <Route path="/courses/:name" component={Course} />
-                    <Route exact path="/courses" component={Courses} />
-                    <Route path="/game/:name" component={GameLoader}/>
+                    <Route exact path="/llk" component={Home} />
+                    <Route path="/llk/" component={Nav} />
+                    <Route path="/llk/login" component={Login} />
+                    <Route path="/llk/courses/:name" component={Course} />
+                    <Route exact path="/llk/courses" component={Courses} />
+                    <Route path="/llk/game/:name" component={GameLoader}/>
                     {/* <Game data={loadData()} /> */}
                 </React.Fragment>
             </Router>

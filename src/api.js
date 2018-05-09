@@ -11,6 +11,9 @@ export const app = {
     },
     email: function() {
         return localStorage.getItem('email')
+    },
+    getUserId: function() {
+        return localStorage.getItem('email')
     }
 }
 
@@ -47,7 +50,7 @@ const data = [
 const apiHost = 'http://localhost:3000/llk'
 
 function myFetch(url, options) {
-    return fetch(url, Object.assign({}, options, { credentials: 'include' }))
+    return fetch(url, Object.assign({ credentials: 'include', headers: jsonHeader }, options))
 }
 
 function fetchJson(url, options) {
@@ -95,6 +98,7 @@ export function getCourse(name) {
 }
 
 export function addCourse() {
+    //return fetchJson(`${apiHost}/addCourse`)
     return new Promise((res,rej)=>{
         setTimeout(()=>{
             res(['one','two','three','four','New'])
@@ -102,12 +106,20 @@ export function addCourse() {
     })
 }
 
-export function saveCourse() {
-    return new Promise((res,rej)=>{
-        setTimeout(()=>{
-            res()
-        },1000)
+export function saveCourse(courseName, words) {
+    return myFetch(`${apiHost}/saveCourse`,{
+        method: 'POST',
+        body: JSON.stringify({
+            courseName,
+            words
+        })
     })
+
+    // return new Promise((res,rej)=>{
+    //     setTimeout(()=>{
+    //         res()
+    //     },1000)
+    // })
 }
 
 export function register(email, password) {
@@ -158,6 +170,7 @@ export function login(email, password) {
     }).then(res => {
         try {
             console.log(`api login res`,)
+            app.setItem('email',email)
             return res.text()
         }catch(err) {
             console.error(err);

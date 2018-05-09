@@ -152,6 +152,22 @@ export const getCourses = (email) => exec(function(db){
   })
 })
 
+export const saveCourse = (email, courseName, words) => exec(function(db){
+  console.log(`db saveCourse`,)
+  return new Promise((resolve,reject) => {
+    let query = { email, courseName }
+    let update = { $set: { email, courseName, words }}
+    db.collection(tables.courses)
+      .updateOne(query, update, {upsert:true, w: 1}, function(err, result){
+        if(err) { 
+          console.error(err)
+          reject(err) 
+        }
+        resolve(result)
+      })
+  })
+})
+
 // export function addUser(email, password) {
 //   let _db
 //   connect().then(db => {

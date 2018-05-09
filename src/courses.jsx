@@ -7,6 +7,8 @@ import { InlineCommand, Command, CommandBar } from './common'
 import { Link } from './common'
 import Login from './login'
 import { app } from './api'
+import Message from './alerts'
+import { withRouter } from 'react-router'
 
 const CourseItem = props => <Link to={`/game/${props.name}`}>
     <li>
@@ -21,14 +23,16 @@ const CourseItem = props => <Link to={`/game/${props.name}`}>
     </li>
 </Link>
 
-export default class Courses extends React.Component {
+class Courses extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             courses: [],
             edit: false,
             loading: true,
-            showLogin: false
+            showLogin: false,
+            message: null,
+            messageType: 'alert-primary'
         }
 
         this.onAddCourse = this.onAddCourse.bind(this)
@@ -81,24 +85,24 @@ export default class Courses extends React.Component {
                     </CommandBar>
                 </div>
                 <Loading show={this.state.loading} />
-                <Login show={showLogin} onClose={() => this.setState({ showLogin: false })} />
-                
+                <Message message={this.state.message} type={this.state.messageType} onClose={()=>this.setState({message:null})}/>
             </div>
         )
     }
 
     onAddCourse() {
-        if (app.isLogin) {
-            this.setState({ loading: true })
-            addCourse().then(courses => {
-                this.setState({
-                    courses,
-                    loading: false
-                })
-            })
+        if (app.getUserId()) {
+            // this.setState({ loading: true })
+            // addCourse().then(courses => {
+            //     this.setState({
+            //         courses,
+            //         loading: false
+            //     })
+            // })
+            this.props.history.push('/llk/courses/new')
         }
         else {
-            this.setState({ showLogin: true })
+            this.setState({ message: 'Please log in to enable this feature' })
         }
     }
 
@@ -106,3 +110,5 @@ export default class Courses extends React.Component {
         this.setState({edit:!this.state.edit})
     }
 }
+
+export default withRouter(Courses)
