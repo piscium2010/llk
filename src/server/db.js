@@ -141,6 +141,10 @@ export const getLink = (code) => exec(function(db){
   })
 })
 
+export const getCourse = (courseId, email) => exec(function(db){
+  return db.collection(tables.courses).findOne({_id: courseId, email})
+})
+
 export const getCourses = (email) => exec(function(db){
   console.log(`db getcourse`,)
   return new Promise((resolve,reject) => {
@@ -152,10 +156,10 @@ export const getCourses = (email) => exec(function(db){
   })
 })
 
-export const saveCourse = (email, courseName, words) => exec(function(db){
-  console.log(`db saveCourse`,)
+export const saveCourse = (courseId, email, courseName, words) => exec(function(db){
+  console.log(`db saveCourse`,courseId)
   return new Promise((resolve,reject) => {
-    let query = { email, courseName }
+    let query = courseId ? { _id: courseId, email } : { email, courseName }
     let update = { $set: { email, courseName, words }}
     db.collection(tables.courses)
       .updateOne(query, update, {upsert:true, w: 1}, function(err, result){

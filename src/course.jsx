@@ -12,7 +12,8 @@ export default class Course extends React.Component {
         super(props)
         this.textRef = null
         this.state = {
-            courseName: props.match.params.name,
+            courseId: props.match.params.courseId === 'new' ? '' : props.match.params.courseId,
+            courseName: '',
             words: '',
             message: null,
             messageType: 'alert-success',
@@ -24,13 +25,15 @@ export default class Course extends React.Component {
     }
 
     componentDidMount() {
-        getCourse(this.state.courseName).then(words=>{
+        getCourse(this.state.courseId).then(({courseId, courseName, words})=>{
+
             words = words ? words : 'gorgeous\nadj.极好的'
 
             this.setState({
                 loading: false,
+                courseName,
                 words
-            },()=>{
+            }, () => {
                 this.textRef.value = words
             })
         })
@@ -43,7 +46,7 @@ export default class Course extends React.Component {
                     <div className="title">Course Name</div>
                     <div className="smalltri" id="one"></div>
                     <div className="section1">
-                        <input className="input-title" name="courseName" placeholder="Course Name Here" value={this.state.courseName} onChange={this.onTextChange}/>
+                        <input className="input-title" type='text' name="courseName" placeholder="Course Name Here" value={this.state.courseName} onChange={this.onTextChange}/>
                     </div>
                     <textarea ref={ref => this.textRef = ref} className="section2" name="words" id="words" cols="100" rows="80"
                     onChange={this.onTextChange}/>
@@ -74,15 +77,29 @@ export default class Course extends React.Component {
         this.setState({
             loading: true
         })
-        let { courseName, words } = this.state
+        let { courseId, courseName, words } = this.state
 
-        saveCourse(courseName, words).then(res=>{
-
+        saveCourse(courseId, courseName, words).then(res=>{
+            let message, messageType
+            switch(res) {
+                case CODE.DONE:
+                    message = 'successful'
+                    messageType = 'alert-success'
+                    break
+                case CODE.NOT_LOGIN:
+                    message = 'Please log in to enable this feature'
+                    messageType = 'alert-danger'
+                    break
+                default:
+                    console.error('courses save',res);
+                    message = 'failed'
+                    messageType = 'alert-danger'
+            }
             this.setState({
-                loading: false,
-                message: res === CODE.DONE ? 'successful' : 'failed',
-                messageType: res === CODE.DONE ? 'alert-success' : 'alert-danger'
+                message,
+                messageType
             })
+
         }).finally(()=>{
             this.setState({
                 loading: false

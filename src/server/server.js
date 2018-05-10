@@ -1,5 +1,5 @@
 import { CODE } from './constants'
-import { addUser, findUser, addUserLink, saveUser, getLink, getCourses, saveCourse } from './db'
+import { addUser, findUser, addUserLink, saveUser, getLink, getCourses, getCourse, saveCourse } from './db'
 import { getRandomCode } from './util'
 import { sendMail } from './email'
 
@@ -65,16 +65,27 @@ app.get(`/${site}/links`, (req, res) => {
 })
 
 //get courses
+app.get(`/${site}/course`, (req, res) => {
+    let email = req.session.uid
+    //console.log(`server course session`,req.session)
+    let courseId = req.query.courseId
+
+    getCourse(courseId, email).then(course => {
+        res.send(JSON.stringify(course || {}))
+    })
+})
+
+//get courses
 app.get(`/${site}/courses`, (req, res) => {
     let email = req.session.uid
     console.log(`server courses session`,req.session)
 
     getCourses(email).then(courses => {
         if(courses && courses.length) {
-            res.send(JSON.stringify(courses.map(c => c.courseName)))
+            res.send(JSON.stringify(courses.map(c => ({name:c.courseName, id: c._id}))))
         }
         else {
-            res.send(JSON.stringify(['examples']))
+            res.send(JSON.stringify([{name:'examples', id:'example'}]))
         }
     })
 })
@@ -85,15 +96,15 @@ app.put(`/${site}/addcourse`, (req, res) => {
 })
 
 app.post(`/${site}/saveCourse`, (req, res) => {
-    let { courseName, words } = req.body
+    let { courseId, courseName, words } = req.body
     let uid = req.session.uid
-    console.log(`server save course`,uid, courseName, words)
+    console.log(`server save course`,uid, courseId, courseName, words)
 
     if(!uid) {
         res.send(CODE.NOT_LOGIN)
     }
     else{
-        saveCourse(uid, courseName, words).then(()=>{
+        saveCourse(courseId, uid, courseName, words).then(()=>{
             res.send(CODE.DONE)
         }).catch(err=>{
             console.error(err)

@@ -53,6 +53,10 @@ function myFetch(url, options) {
     return fetch(url, Object.assign({ credentials: 'include', headers: jsonHeader }, options))
 }
 
+function fetchText(url, options) {
+    return fetch(url, Object.assign({ credentials: 'include', headers: jsonHeader }, options)).then(res => res.text())
+}
+
 function fetchJson(url, options) {
     return myFetch(url, options).then(res => 
         res.text().then(result => {
@@ -89,11 +93,15 @@ export function getCourses() {
     })
 }
 
-export function getCourse(name) {
+export function getCourse(courseId) {
+    if (courseId) {
+        return fetchJson(`${apiHost}/getCourse?courseId=${courseId}`, {
+            method: 'GET'
+        })
+    }
+
     return new Promise((res,rej)=>{
-        setTimeout(()=>{
-            res('gorgeous\nadj.极好的\nawesome\nadj.棒极了')
-        },1000)
+        res('gorgeous\nadj.极好的\nawesome\nadj.棒极了')
     })
 }
 
@@ -106,10 +114,11 @@ export function addCourse() {
     })
 }
 
-export function saveCourse(courseName, words) {
-    return myFetch(`${apiHost}/saveCourse`,{
+export function saveCourse(courseId, courseName, words) {
+    return fetchText(`${apiHost}/saveCourse`,{
         method: 'POST',
         body: JSON.stringify({
+            courseId,
             courseName,
             words
         })

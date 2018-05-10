@@ -10,11 +10,11 @@ import { app } from './api'
 import Message from './alerts'
 import { withRouter } from 'react-router'
 
-const CourseItem = props => <Link to={`/game/${props.name}`}>
+const CourseItem = props => <Link to={`/game/${props.courseId}`}>
     <li>
-        {props.name}
+        {props.courseName}
         {
-            props.edit && <Link to={`/courses/${props.name}`}>
+            props.edit && <Link to={`/courses/${props.courseId}`}>
                 <InlineCommand>
                     <Icon name='edit' width={24} height={24} />
                 </InlineCommand>
@@ -72,7 +72,7 @@ class Courses extends React.Component {
                 <div className="main">
                     <ul className="rolldown-list">
                         {
-                            this.state.courses.map(c => (<CourseItem key={c} name={c} edit={this.state.edit} />))
+                            this.state.courses.map(c => (<CourseItem key={c.id || 1} courseName={c.name} courseId={c.id} edit={this.state.edit} />))
                         }
                     </ul> 
                     <CommandBar>

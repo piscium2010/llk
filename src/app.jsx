@@ -22,7 +22,7 @@ export default class App extends React.Component{
                     <Route exact path="/llk" component={Home} />
                     <Route path="/llk/" component={Nav} />
                     <Route path="/llk/login" component={Login} />
-                    <Route path="/llk/courses/:name" component={Course} />
+                    <Route path="/llk/courses/:courseId" component={Course} />
                     <Route exact path="/llk/courses" component={Courses} />
                     <Route path="/llk/game/:name" component={GameLoader}/>
                     {/* <Game data={loadData()} /> */}

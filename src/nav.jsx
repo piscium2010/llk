@@ -18,8 +18,10 @@ class Menu extends React.Component {
 
     toggle(evt) {
         evt.preventDefault()
-        if(evt.target === evt.currentTarget)
-            this.setState({showItems: !this.state.showItems})
+        //console.log(`evt.class`,evt.target.getAttribute('class'))
+        let className = evt.target.getAttribute('class')
+        if(className && className.indexOf('nav-dropdown-item') >= 0) { return }
+        this.setState({showItems: !this.state.showItems})
     }
 
     render() {
@@ -28,10 +30,10 @@ class Menu extends React.Component {
         let Items = children[1]
         
         return (
-            <div className='nav-menu'>
-                {
-                    React.cloneElement(Menu,{onClick:this.toggle})
-                }
+            <div className='nav-menu' onClick={this.toggle}>
+                    {
+                        React.cloneElement(Menu)
+                    }
                 {
                     this.state.showItems && Items
                 }
