@@ -95,7 +95,7 @@ export function getCourses() {
 
 export function getCourse(courseId) {
     if (courseId) {
-        return fetchJson(`${apiHost}/getCourse?courseId=${courseId}`, {
+        return fetchJson(`${apiHost}/course?courseId=${courseId}`, {
             method: 'GET'
         })
     }

@@ -64,13 +64,14 @@ app.get(`/${site}/links`, (req, res) => {
     })
 })
 
-//get courses
+//get course
 app.get(`/${site}/course`, (req, res) => {
     let email = req.session.uid
     //console.log(`server course session`,req.session)
     let courseId = req.query.courseId
-
+    
     getCourse(courseId, email).then(course => {
+        console.log(`server course`,course)
         res.send(JSON.stringify(course || {}))
     })
 })

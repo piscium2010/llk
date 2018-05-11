@@ -10,11 +10,11 @@ import { app } from './api'
 import Message from './alerts'
 import { withRouter } from 'react-router'
 
-const CourseItem = props => <Link to={`/game/${props.courseId}`}>
+const CourseItem = props => <Link to={`/llk/game/${props.courseId}`}>
     <li>
         {props.courseName}
         {
-            props.edit && <Link to={`/courses/${props.courseId}`}>
+            props.edit && <Link to={`/llk/courses/${props.courseId}`}>
                 <InlineCommand>
                     <Icon name='edit' width={24} height={24} />
                 </InlineCommand>

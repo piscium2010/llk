@@ -11,10 +11,11 @@ export default class Course extends React.Component {
     constructor(props) {
         super(props)
         this.textRef = null
+        this.nameRef = null
         this.state = {
             courseId: props.match.params.courseId === 'new' ? '' : props.match.params.courseId,
             courseName: '',
-            words: '',
+            words: 'gorgeous\nadj.极好的',
             message: null,
             messageType: 'alert-success',
             loading: true
@@ -27,7 +28,7 @@ export default class Course extends React.Component {
     componentDidMount() {
         getCourse(this.state.courseId).then(({courseId, courseName, words})=>{
 
-            words = words ? words : 'gorgeous\nadj.极好的'
+            words = words ? words : this.state.words
 
             this.setState({
                 loading: false,
@@ -35,6 +36,7 @@ export default class Course extends React.Component {
                 words
             }, () => {
                 this.textRef.value = words
+                this.nameRef.value = courseName
             })
         })
     }
@@ -46,10 +48,23 @@ export default class Course extends React.Component {
                     <div className="title">Course Name</div>
                     <div className="smalltri" id="one"></div>
                     <div className="section1">
-                        <input className="input-title" type='text' name="courseName" placeholder="Course Name Here" value={this.state.courseName} onChange={this.onTextChange}/>
+                        <input ref={ref => this.nameRef = ref} 
+                            className="input-title" 
+                            type='text' name="courseName" 
+                            placeholder="Course Name Here" 
+                            value={this.state.courseName} 
+                            onChange={this.onTextChange}
+                        />
                     </div>
-                    <textarea ref={ref => this.textRef = ref} className="section2" name="words" id="words" cols="100" rows="80"
-                    onChange={this.onTextChange}/>
+                    <textarea ref={ref => this.textRef = ref} 
+                        className="section2" 
+                        name="words" 
+                        id="words" 
+                        cols="100" 
+                        rows="80"
+                        onChange={this.onTextChange}
+                        value={this.state.words}
+                    />
                     <CommandBar>
                         <Command onClick={this.onSaveCourse}>
                             <Icon name='save' width={28} height={28} />

@@ -2,6 +2,7 @@ import { getRandomCode } from './util'
 import mongodb from 'mongodb'
 
 //var MongoClient = require('mongodb').MongoClient;
+const ObjectID = mongodb.ObjectID
 const MongoClient = mongodb.MongoClient;
 const url = "mongodb://localhost:27017/llk";
 
@@ -142,7 +143,8 @@ export const getLink = (code) => exec(function(db){
 })
 
 export const getCourse = (courseId, email) => exec(function(db){
-  return db.collection(tables.courses).findOne({_id: courseId, email})
+  console.log(`db get course`,courseId,email)
+  return db.collection(tables.courses).findOne({_id: new ObjectID(courseId), email})
 })
 
 export const getCourses = (email) => exec(function(db){
