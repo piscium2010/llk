@@ -1,10 +1,10 @@
-const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path')
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
-    mode:'development',
+    mode: process.env.NODE_ENV || 'development',
     entry: {
       app: './src/index.jsx'
     },
@@ -50,10 +50,11 @@ module.exports = {
       new CleanWebpackPlugin('public'),
       new webpack.NamedModulesPlugin(),
       new HtmlWebpackPlugin({
-        title: 'My App',
-        filename: 'index.html'
+        title: 'Words Game',
+        filename: 'index.html',
+        favicon: 'src/images/atm.png'
       }),
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NoEmitOnErrorsPlugin(),
     ]
-  };
+  }

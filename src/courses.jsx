@@ -10,11 +10,11 @@ import { app } from './api'
 import Message from './alerts'
 import { withRouter } from 'react-router'
 
-const CourseItem = props => <Link to={`/llk/game/${props.courseId}`}>
+const CourseItem = props => <Link to={`game/${props.courseId}`}>
     <li>
-        {props.courseName}
+        {props.courseName || 'NEW'}
         {
-            props.edit && <Link to={`/llk/courses/${props.courseId}`}>
+            props.edit && <Link to={`courses/${props.courseId}`}>
                 <InlineCommand>
                     <Icon name='edit' width={24} height={24} />
                 </InlineCommand>
@@ -37,15 +37,10 @@ class Courses extends React.Component {
 
         this.onAddCourse = this.onAddCourse.bind(this)
         this.onEditCourse = this.onEditCourse.bind(this)
-        this.onLogin = this.onLogin.bind(this)
+        this.doWhenLogin = this.doWhenLogin.bind(this)
     }
     componentDidMount() {
-        // getCourses().then(courses => this.setState({
-        //     courses,
-        //     loading: false
-        // }))
         getCourses().then(courses => {
-            console.log(`courses courses`,courses)
             this.setState({
                 courses,
                 loading: false
@@ -53,15 +48,25 @@ class Courses extends React.Component {
         })
     }
 
-    onLogin() {
-        // console.log(`courses login`,)
-        // this.setState({loading:true, showLogin: false},()=>{
-        //     getCourses().then(courses => this.setState({
-        //         courses
-        //     })).finally(()=>{
-        //         this.setState({loading: false})
-        //     })
-        // })
+    doWhenLogin(action) {
+        if (app.getUserId()) {
+            action()
+        }
+        else {
+            this.setState({ message: 'Please Sign in to enable this feature' })
+        }
+    }
+
+    onAddCourse() {
+        this.doWhenLogin(()=>{
+            this.props.history.push('/llk/courses/new')
+        })
+    }
+
+    onEditCourse() {
+        this.doWhenLogin(()=>{
+            this.setState({edit:!this.state.edit})
+        })
     }
 
     render() {
@@ -89,26 +94,7 @@ class Courses extends React.Component {
             </div>
         )
     }
-
-    onAddCourse() {
-        if (app.getUserId()) {
-            // this.setState({ loading: true })
-            // addCourse().then(courses => {
-            //     this.setState({
-            //         courses,
-            //         loading: false
-            //     })
-            // })
-            this.props.history.push('/llk/courses/new')
-        }
-        else {
-            this.setState({ message: 'Please log in to enable this feature' })
-        }
-    }
-
-    onEditCourse() {
-        this.setState({edit:!this.state.edit})
-    }
 }
 
 export default withRouter(Courses)
+

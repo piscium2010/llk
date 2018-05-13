@@ -15,9 +15,6 @@ class _Link extends React.Component {
     render() {
         const { to, match, location, history, children, ...restProps } = this.props
         const onClick = function(evt) {
-            // if(evt.currentTarget !== evt.target) {
-            //     return
-            // }
 
             evt.stopPropagation()
 

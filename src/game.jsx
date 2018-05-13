@@ -16,8 +16,11 @@ export default class GameLoader extends React.Component {
         }
     }
     componentDidMount() {
-        getCourse(this.props.match.params.name)
-            .then(words => 
+        getCourse(this.props.match.params.courseId)
+            .then(result=>{
+                return result
+            })
+            .then(({words}) => 
                 this.processWords(words)
             )
             .then(data => {
@@ -71,7 +74,7 @@ export default class GameLoader extends React.Component {
 
 class Game extends React.Component {
     static defaultProps = {
-        pageCount: 6,
+        pageCount: 20,
         data: []
     }
 

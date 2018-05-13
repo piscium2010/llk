@@ -2,7 +2,10 @@ import { CODE } from './constants'
 import { addUser, findUser, addUserLink, saveUser, getLink, getCourses, getCourse, saveCourse } from './db'
 import { getRandomCode } from './util'
 import { sendMail } from './email'
+import templates from './templates'
 
+const path = require('path')
+const fs = require('fs')
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
@@ -20,8 +23,10 @@ app.use(function (req, res, next) {
 app.use(session({
     secret: 'keyboard cat',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    expires: new Date(Date.now() + (20 * 86400 * 1000))
 }))
+
 
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -30,14 +35,10 @@ app.use(bodyParser.json())
 const site = 'llk'
 const apiHost = 'http://localhost:3000/llk'
 
+
 app.get(`/${site}/`, (req, res) => {
     console.log(`session`, req.session)
-    //req.session.uid = 'udi'
     res.send('hello srts')
-})
-
-app.get(`/${site}/findUser`, (req, res) => {
-    console.log(`find User`, )
 })
 
 //user links
@@ -45,19 +46,23 @@ app.get(`/${site}/links`, (req, res) => {
     console.log(`links`,req.query)
     let code = req.query.code
     let msg = ''
-    getLink(code).then(({email, type})=>{
+    getLink(code).then(({email, type, password})=>{
         if(email) {
             console.log(`result.type`,type)
             switch(type) {
                 case 'activate' :
                     msg = 'your account has been activated'
                     return saveUser({email},{active:true})
+                case 'reset' :
+                    msg = 'your password has been reset'
+                    return saveUser({email},{password})
                 default:
                     return Promise.reject()
             }
         }
     }).then(()=>{
-        res.send(msg)
+        res.header('Content-Type', 'text/html')
+        res.send(templates.notification.replace('{$content}',`<p>${msg}</p>`))
     }).catch(err=>{
         console.log(`err`,err)
         res.send(CODE.ERROR)
@@ -69,7 +74,7 @@ app.get(`/${site}/course`, (req, res) => {
     let email = req.session.uid
     //console.log(`server course session`,req.session)
     let courseId = req.query.courseId
-    
+
     getCourse(courseId, email).then(course => {
         console.log(`server course`,course)
         res.send(JSON.stringify(course || {}))
@@ -154,10 +159,7 @@ app.post(`/${site}/addcourse`, (req, res) => {
 })
 
 app.post(`/${site}/register`, (req, res) => {
-    //console.log(`register`)
-
     let { email, password } = req.body
-    console.log(`email`,email,password,req.body)
 
     findUser(email).then(result => {
         if(result) {
@@ -175,8 +177,8 @@ app.post(`/${site}/register`, (req, res) => {
         }).then(code => {
             //send activate link
             return new Promise((resolve, reject) => {
-                let html = `<h1>Please click below link to activate your account</h1><p>${apiHost}/links?code=${code}</p>`
-                sendMail(email, 'Please activate your account', html, function (err, info) {
+                let html = `<p>Please click below link to activate your account</p><p><a href='${apiHost}/links?code=${code}'>Activate account</a></p>`
+                sendMail(email, 'Please activate your account', templates.notification.replace('{$content}',html), function (err, info) {
                     if (err) { reject(err) }
                     resolve()
                 })
@@ -188,6 +190,30 @@ app.post(`/${site}/register`, (req, res) => {
             res.send(CODE.ERROR)
         })
     })
+})
+
+app.post(`/${site}/reset`,(req,res) => {
+    let { email, password } = req.body
+
+    findUser(email).then(result => {
+        //email not found
+        if(!result) {
+            res.send(CODE.EMAIL_NOT_FOUND)
+            return
+        }
+
+        addUserLink(email, 'reset',{password}).then(code=>{
+            let html = `<p>Please click below link to reset your password</p><p><a href='${apiHost}/links?code=${code}'>Confirm reset</a></p>`
+            sendMail(email, 'Please confirm reset password', templates.notification.replace('{$content}',html), function (err, info) {
+                if (err) { reject(err) }
+                resolve()
+            })
+        }).then(()=>{
+            res.send(CODE.DONE)
+        })
+    })
+
+    
 })
 
 export default app

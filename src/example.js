@@ -1,0 +1,1 @@
+export const words = 'face\nn.脸，面孔\nbag\nn.书包\ngive\nv. 给，产生\nmoon\nn. 月亮\nmany\nadj. 很多的\nme\npron. 我\narea\nn.地区，区域\nmiddle\nn.中间\nsport\nn. 运动\nleg\nn. 腿\nquietly\nadv. 轻声地\ncashier\nn. 收银员'

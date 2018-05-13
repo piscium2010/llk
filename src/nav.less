@@ -3,15 +3,19 @@
 .app {
     &.nav {
         position: fixed;
-        background: #191919;
+        background: #444;
         top: 0;
         left: 0;
         right: 0;
         height: @nav-height;
         z-index: 3;
         display: block;
-
         ul {
+            padding: 0;
+        }
+
+        li {
+            list-style-type: none;
             float: right;
         }
 
@@ -24,27 +28,29 @@
             padding:10px;
             cursor: pointer;
             position: relative;
-            .nav-dropdown-menu {
-                position: absolute;
-                border: 1px solid rgba(0, 0, 0, .15);
-                border-radius: .25rem;
-                width: 120px;
-                height: 40px;
-                top: 0;
-                right: 0;
-                transform: translate3d(0, @nav-height + 4, 0);
-                background: #fff;
-                .nav-dropdown-item{
-                    display: block;
-                    color: black;
-                    width: 100%;
-                    line-height: 40px;
-                    padding-left: 10px;
-                }
+        }
 
-                &:hover {
-                    background: #f8f9fa;
-                }
+        .nav-dropdown-menu {
+            position: absolute;
+            border: 1px solid rgba(0, 0, 0, .15);
+            border-radius: .25rem;
+            width: 120px;
+            height: 40px;
+            top: 0;
+            right: 0;
+            transform: translate3d(0, @nav-height + 4, 0);
+            background: #fff;
+            .nav-dropdown-item{
+                display: block;
+                color: black;
+                width: 100%;
+                line-height: 40px;
+                padding-left: 10px;
+                cursor: pointer;
+            }
+
+            &:hover {
+                background: #f8f9fa;
             }
         }
 

@@ -29,6 +29,7 @@ export default class Course extends React.Component {
         getCourse(this.state.courseId).then(({courseId, courseName, words})=>{
 
             words = words ? words : this.state.words
+            courseName = courseName ? courseName : this.state.courseName
 
             this.setState({
                 loading: false,

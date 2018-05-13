@@ -10,7 +10,7 @@ import Message from './alerts'
 import GameLoader from './game'
 import Login from './login'
 import Nav from './nav'
-
+import Footer from './footer'
 
 
 export default class App extends React.Component{
@@ -20,11 +20,12 @@ export default class App extends React.Component{
             <Router>
                 <React.Fragment>
                     <Route exact path="/llk" component={Home} />
+                    <Route path="/llk" component={Footer} />
                     <Route path="/llk/" component={Nav} />
                     <Route path="/llk/login" component={Login} />
                     <Route path="/llk/courses/:courseId" component={Course} />
                     <Route exact path="/llk/courses" component={Courses} />
-                    <Route path="/llk/game/:name" component={GameLoader}/>
+                    <Route path="/llk/game/:courseId" component={GameLoader}/>
                     {/* <Game data={loadData()} /> */}
                 </React.Fragment>
             </Router>

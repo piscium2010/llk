@@ -4,7 +4,8 @@ import mongodb from 'mongodb'
 //var MongoClient = require('mongodb').MongoClient;
 const ObjectID = mongodb.ObjectID
 const MongoClient = mongodb.MongoClient;
-const url = "mongodb://localhost:27017/llk";
+//const url = "mongodb://localhost:27017/llk";
+const url = "mongodb://llk:llk2017@localhost:27017/llk?authMechanism=DEFAULT";
 
 function connect() {
   return new Promise((resolve, reject)=>{
@@ -130,7 +131,7 @@ export const addUserLink = (email, type, data) => exec(function (db) {
     email,
     code,
     type,
-    data,
+    ...data,
     date: new Date().toISOString()
   }
   return db.collection(tables.user_links).insertOne(document).then(() => code)
@@ -161,7 +162,7 @@ export const getCourses = (email) => exec(function(db){
 export const saveCourse = (courseId, email, courseName, words) => exec(function(db){
   console.log(`db saveCourse`,courseId)
   return new Promise((resolve,reject) => {
-    let query = courseId ? { _id: courseId, email } : { email, courseName }
+    let query = courseId ? { _id: new ObjectID(courseId), email } : { email, courseName }
     let update = { $set: { email, courseName, words }}
     db.collection(tables.courses)
       .updateOne(query, update, {upsert:true, w: 1}, function(err, result){

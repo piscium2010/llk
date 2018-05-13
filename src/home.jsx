@@ -9,7 +9,7 @@ export default class Home extends React.Component {
             <div className="home-main">
                 <Link style={{ textDecorationLine: 'none' }} to="/llk/courses">
                     <button className="home-button">
-                        Start
+                        <span>Play</span>
                     </button>
                 </Link>
             </div>

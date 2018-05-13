@@ -4,10 +4,12 @@ const nodeExternals = require("webpack-node-externals");
 const StartServerPlugin = require("start-server-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 
+const production = process.env.NODE_ENV === 'production'
+
 module.exports = {
-    mode: 'development',
-    entry: [ "webpack/hot/poll?1000", "./src/server/index" ],
-    watch: true,
+    mode: process.env.NODE_ENV || 'development',
+    entry: production? './src/server/index' : [ "webpack/hot/poll?1000", "./src/server/index" ],
+    watch: production? false : true,
     target: "node",
     externals: [ nodeExternals({ whitelist: [ "webpack/hot/poll?1000" ] }) ],
     module: {
@@ -15,7 +17,10 @@ module.exports = {
             { test: /\.js?$/, use: "babel-loader", exclude: /node_modules/ },
         ],
     },
-    plugins: [
+    plugins: production? [
+        new webpack.NamedModulesPlugin(),
+    ]
+    :[
         new CleanWebpackPlugin('devServer'),
         new StartServerPlugin("server.js"),
         new webpack.NamedModulesPlugin(),
@@ -25,5 +30,5 @@ module.exports = {
             "process.env": { BUILD_TARGET: JSON.stringify("server") },
         }),
     ],
-    output: { path: path.join(__dirname, "devServer"), filename: "server.js" },
+    output: { path: path.join(__dirname, production? "public" : "devServer"), filename: "server.js" },
 };

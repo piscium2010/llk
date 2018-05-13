@@ -1,7 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
 import './login.less'
-import { register, CODE, findUser, login, app } from './api'
+import { register, CODE, findUser, login, app, resetPassword } from './api'
 import Loading from './loading'
 import Message from './alerts'
 import { withRouter } from 'react-router'
@@ -81,6 +81,8 @@ class Login extends React.Component {
 
             reset_email: '',
             reset_emailErrorMsg: '',
+            reset_password: '',
+            reset_passwordErrorMsg: '',
 
             loading: false,
             message: null
@@ -101,6 +103,8 @@ class Login extends React.Component {
         this.onClickResetPassword = this.onClickResetPassword.bind(this)
         this.onClose = this.onClose.bind(this)
         this.onClickLogin = this.onClickLogin.bind(this)
+        this.onClickResetPassword = this.onClickResetPassword.bind(this)
+        this.onConfirmReset = this.onConfirmReset.bind(this)
     }
 
     onEmailBlur(name) {
@@ -125,23 +129,21 @@ class Login extends React.Component {
     }
 
     validateOnRegister() {
-        let { register_email, register_password, register_repeatPassword, register_emailErrorMsg, register_repeatPasswordErrorMsg } = this.state
+        let { register_email, register_password, register_repeatPassword, register_emailErrorMsg } = this.state
 
-        if(register_emailErrorMsg || register_repeatPasswordErrorMsg) {
+        if(register_emailErrorMsg) {
             return false
         }
 
-        if(!register_email || !register_password || !register_repeatPassword) {
+        if(!register_email || !register_password) {
             this.setState({
                 shakeEmail: register_email? false : true,
                 shakePassword: register_password? false : true,
-                shakeRepeatPassword: register_repeatPassword ? false : true
             },()=>{
                 setTimeout(() => {
                     this.setState({
                         shakeEmail: false,
                         shakePassword: false,
-                        shakeRepeatPassword: false
                     })
                 }, 1500);
             })
@@ -176,7 +178,33 @@ class Login extends React.Component {
         return true
     }
 
-    onClickRegister() {
+    validateOnReset() {
+        let { reset_email, reset_password, reset_emailErrorMsg } = this.state
+
+        if(reset_emailErrorMsg) {
+            return false
+        }
+
+        if(!reset_email || !reset_password) {
+            this.setState({
+                shakeEmail: reset_email? false : true,
+                shakePassword: reset_password? false : true,
+            },()=>{
+                setTimeout(() => {
+                    this.setState({
+                        shakeEmail: false,
+                        shakePassword: false
+                    })
+                }, 1500);
+            })
+            return false
+        }
+
+        return true
+    }
+
+    onClickRegister(evt) {
+        evt.preventDefault()
         this.setState({
             level: this.state.level === 'level-login' ? 'level-reg' : 'level-login'
         })
@@ -196,11 +224,6 @@ class Login extends React.Component {
         login(email, password).then(res => {
             switch(res) {
                 case CODE.DONE:
-                    //app.email = email
-                    //console.log(`login app.email set tt`)
-                    //localStorage.setItem('email','tt')
-                    //app.setItem('email',email)
-                    //this.props.onClose()
                     this.props.history.goBack()
                     break
                 case CODE.WRONG_CREDENTIAL:
@@ -208,7 +231,6 @@ class Login extends React.Component {
                         message: 'Incorrect username or password',
                         messageType: 'alert-danger'
                     })
-                    //this.setState({login_emailErrorMsg:'Incorrect username or password'})
                     break
                 default:
                     console.error('login login',res)
@@ -219,7 +241,8 @@ class Login extends React.Component {
         })
     }
 
-    onSubmitRegister() {
+    onSubmitRegister(evt) {
+        evt.preventDefault()
         let isvalid = this.validateOnRegister()
         if(isvalid) {
             let email = this.state.register_email
@@ -230,14 +253,12 @@ class Login extends React.Component {
                 res => {
                     if(res === CODE.EMAIL_EXISTED) {
                         this.setState({
-                            //register_emailErrorMsg:'Email is already registered'
                             message: 'Email is already registered',
                             messageType: 'alert-danger'
                         })
                     }
                     else if(res === CODE.NOT_ACTIVE) {
                         this.setState({
-                            //register_emailErrorMsg:'Your account is not active'
                             message: 'Your account is not active',
                             messageType: 'alert-danger'
                         })
@@ -259,28 +280,6 @@ class Login extends React.Component {
         }
     }
 
-    // handleResponse(res) {
-    //     console.log(`login res`,res)
-    //     if(res === CODE.EMAIL_EXISTED) {
-    //         this.setState({
-    //             register_emailErrorMsg:'Email is already registered'
-    //         })
-    //     }
-    //     else if(res === CODE.NOT_ACTIVE) {
-    //         this.setState({
-    //             register_emailErrorMsg:'Your account is not active'
-    //         })
-    //     }
-    //     else if(res === CODE.DONE) {
-    //         this.setState({
-    //             register_email: '',
-    //             register_password: '',
-    //             register_repeatPassword: '',
-    //             level: 'level-reg-link'
-    //         })
-    //     }
-    // }
-
     onClickForgot(evt) {
         evt.preventDefault()
         this.setState({
@@ -296,14 +295,49 @@ class Login extends React.Component {
     }
 
     onConfirmRegister(evt) {
+        evt.preventDefault()
+        this.setState({
+            level: 'level-login'
+        })
+    }
+
+    onConfirmReset(evt) {
+        evt.preventDefault()
         this.setState({
             level: 'level-login'
         })
     }
 
     onClickResetPassword(evt) {
-        this.setState({
-            level: 'level-forget-link'
+        evt.preventDefault()
+        evt.stopPropagation()
+        let valid = this.validateOnReset()
+        if(!valid) return
+
+        let email = this.state.reset_email
+        let password = this.state.reset_password
+
+        this.setState({loading:true})
+
+        resetPassword(email,password).then(res=>{
+            switch(res) {
+                case CODE.EMAIL_NOT_FOUND:
+                    this.setState({
+                        message: 'Email not found',
+                        messageType: 'alert-danger'
+                    })
+                    break
+                case CODE.DONE:
+                    this.setState({
+                        level: 'level-forget-link'
+                    })
+                    break
+                default:
+                    console.error(`login reset`,res)
+                    break
+            }
+        }).finally(()=>{
+            this.setState({loading:false})
         })
     }
 
@@ -373,14 +407,21 @@ class Login extends React.Component {
                             </a>
                             <h2>Reset Password</h2>
                             <form className="form">
-                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, </p>
+                                <p></p>
                                 <InputField label={'Email'} 
-                                    className={`f_row last ${this.state.shakeEmail?'shake':''}`} 
+                                    className={`f_row ${this.state.shakeEmail?'shake':''}`} 
                                     type='text' 
                                     onChange={this.onChange('reset_email')} 
                                     errorMsg={this.state.reset_emailErrorMsg}
                                     onBlur={this.onEmailBlur('reset_email')}
                                     value={this.state.reset_email}
+                                />
+                                <InputField label={'New Password'} 
+                                    className={`f_row last ${this.state.shakeEmail?'shake':''}`} 
+                                    type='password' 
+                                    onChange={this.onChange('reset_password')} 
+                                    errorMsg={this.state.reset_passwordErrorMsg}
+                                    value={this.state.reset_password}
                                 />
                                 <button className="btn" onClick={this.onClickResetPassword}>
                                     <span>Reset</span>
@@ -396,7 +437,7 @@ class Login extends React.Component {
                             <h2>Reset Password</h2>
                             <form className="form">
                                 <p>A link has been sent to your email. Please visit your email to reset password.</p>
-                                <button className="btn">
+                                <button className="btn" onClick={this.onConfirmReset}>
                                     <span>OK</span>
                                 </button>
                             </form>
@@ -419,14 +460,6 @@ class Login extends React.Component {
                                     onChange={this.onChange('register_password')}
                                     errorMsg={this.state.register_passwordErrorMsg}
                                     value={this.state.register_password}
-                                />
-                                <InputField label={'Repeat Password'}
-                                    className={`f_row last ${this.state.shakeRepeatPassword ? 'shake' : ''}`}
-                                    type='password'
-                                    onChange={this.onChange('register_repeatPassword')}
-                                    errorMsg={this.state.register_repeatPasswordErrorMsg}
-                                    onBlur={this.onRepeatPasswordBlur}
-                                    value={this.state.register_repeatPassword}
                                 />
                                 <button className="btn-large" onClick={this.onSubmitRegister}>Go</button>
                             </form>
