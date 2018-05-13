@@ -1,6 +1,7 @@
 import { words } from './example'
 import { CODE } from './server/constants'
 export { CODE } from './server/constants'
+import { site, apiHost } from './server/config'
 
 
 export const app = {
@@ -34,7 +35,8 @@ export const app = {
 
 const jsonHeader = { "Content-Type": "application/json" }
 
-const apiHost = 'http://localhost:3000/llk'
+// const site = 'llk/api'
+// const apiHost = `http://localhost:3000/${site}`
 
 function myFetch(url, options) {
     return fetch(url, Object.assign({ credentials: 'include', headers: jsonHeader }, options))

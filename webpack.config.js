@@ -2,6 +2,10 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+
+const production = process.env.NODE_ENV === 'production'
 
 module.exports = {
     mode: process.env.NODE_ENV || 'development',
@@ -41,12 +45,14 @@ module.exports = {
           },
           {
             test: /\.(css|less)$/,
-            use: [ 'style-loader', 'css-loader','less-loader' ]
+            use: [ 'style-loader', 'css-loader?minimize','less-loader' ]
+            
           }
         ]
       },
-    devtool: 'inline-source-map',
+    devtool: process.env.NODE_ENV ? '' : 'inline-source-map',
     plugins: [
+      new UglifyJsPlugin(),
       new CleanWebpackPlugin('public'),
       new webpack.NamedModulesPlugin(),
       new HtmlWebpackPlugin({
@@ -55,6 +61,7 @@ module.exports = {
         favicon: 'src/images/atm.png'
       }),
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.NoEmitOnErrorsPlugin(),
+      new webpack.NoEmitOnErrorsPlugin()
+      //new BundleAnalyzerPlugin()
     ]
   }
