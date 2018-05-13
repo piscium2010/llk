@@ -1,9 +1,10 @@
 import http from "http";
 import app from "./server";
+import { apiPort } from './config'
 
 const server = http.createServer(app);
 let currentApp = app;
-server.listen(3000);
+server.listen(apiPort,'0.0.0.0');
 
 if (module.hot) {
     module.hot.accept("./server", () => {

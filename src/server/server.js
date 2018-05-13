@@ -3,6 +3,7 @@ import { addUser, findUser, addUserLink, saveUser, getLink, getCourses, getCours
 import { getRandomCode } from './util'
 import { sendMail } from './email'
 import templates from './templates'
+import { site, apiHost, host, webPort } from './config'
 
 const path = require('path')
 const fs = require('fs')
@@ -12,7 +13,7 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 
 app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+    res.header("Access-Control-Allow-Origin", `http://${host}`);
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -32,8 +33,8 @@ app.use(session({
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-const site = 'llk'
-const apiHost = 'http://localhost:3000/llk'
+// const site = 'llk/api'
+// const apiHost = `http://localhost:3000/${site}`
 
 
 app.get(`/${site}/`, (req, res) => {

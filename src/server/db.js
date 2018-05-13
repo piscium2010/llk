@@ -1,11 +1,11 @@
 import { getRandomCode } from './util'
 import mongodb from 'mongodb'
-
+import { host } from './config'
 //var MongoClient = require('mongodb').MongoClient;
 const ObjectID = mongodb.ObjectID
 const MongoClient = mongodb.MongoClient;
 //const url = "mongodb://localhost:27017/llk";
-const url = "mongodb://llk:llk2017@localhost:27017/llk?authMechanism=DEFAULT";
+const url = `mongodb://llk:llk2017@${host}:27017/llk?authMechanism=DEFAULT`;
 
 function connect() {
   return new Promise((resolve, reject)=>{
